@@ -28,7 +28,7 @@ Adafruit_BMP085 bmp;
 DHT dht(DHTPIN, DHTTYPE);
 
 //power cam bien anh sang (analog)
-int power_light_intensity = A5;
+/*int power_light_intensity = A5;*/
 int data_analog_light_intensity = A0;
 
 //power cam bien anh sang (digital)
@@ -36,6 +36,7 @@ int data_digital_light_intensity = A1;
 
 //led bao gui publish
 int led_show = D7;
+int relay = D6;
 
 int time_delay = 20000;
 
@@ -71,12 +72,13 @@ void setup() {
 	while (1) {}
   }
 
-	pinMode(power_light_intensity, OUTPUT);
+	/*pinMode(power_light_intensity, OUTPUT);*/
   pinMode(data_analog_light_intensity, INPUT);
 	pinMode(data_digital_light_intensity, INPUT);
 	pinMode(led_show, OUTPUT);
+  pinMode(relay, OUTPUT);
 
-	digitalWrite(power_light_intensity, HIGH);
+	/*digitalWrite(power_light_intensity, HIGH);*/
 
   digitalWrite(led_show, HIGH);
 
@@ -99,25 +101,25 @@ void setup() {
 void loop() {
 
 
-    Serial.print("ap suat = ");
+    /*Serial.print("ap suat = ");*/
     pa = bmp.readPressure();
     Serial.print(pa);
-    Serial.println(" Pa");
+    /*Serial.println(" Pa");*/
 
-    Serial.print("Do cao thuc te = ");
+    /*Serial.print("Do cao thuc te = ");*/
     height = bmp.readAltitude(101500);
-    Serial.print(height);
-    Serial.println(" meters");
+    /*Serial.print(height);*/
+    /*Serial.println(" meters");*/
 
-    Serial.println();
+    /*Serial.println();*/
 
-	  Serial.print("cuong do anh sang (analog)= ");
+	  /*Serial.print("cuong do anh sang (analog)= ");*/
 		light_analog = analogRead(data_analog_light_intensity);
-	  Serial.println(light_analog);
+	  /*Serial.println(light_analog);*/
 
-    Serial.print("cuong do anh sang (digital)= ");
+    /*Serial.print("cuong do anh sang (digital)= ");*/
 		light_digital = digitalRead(data_digital_light_intensity);
-	  Serial.println(light_digital);
+	  /*Serial.println(light_digital);*/
 
 		// Reading temperature or humidity takes about 250 milliseconds!
 		// Sensor readings may also be up to 2 seconds 'old' (its a
@@ -141,7 +143,7 @@ void loop() {
 		dp = dht.getDewPoint();
 		k = dht.getTempKelvin();
 
-		Serial.print("Độ ẩm: ");
+		/*Serial.print("Độ ẩm: ");
 		Serial.print(h);
 		Serial.print("% - ");
 		Serial.print("Nhiệt độ: ");
@@ -162,7 +164,7 @@ void loop() {
     Serial.print("time delay ");
     Serial.println(time_delay);
 		Serial.println("-------------------------------");
-		Serial.println();
+		Serial.println();*/
 
     environment = "{";
     environment += "\"pa\" : ";
@@ -187,6 +189,12 @@ void loop() {
     environment += dp;
     environment += "}";
     Particle.publish("Environment", environment);
+
+    if(t > heightTemp){
+      digitalWrite(relay,HIGH);
+    }else{
+      digitalWrite(relay,LOW);
+    }
 
     if(t < lowTemp || t > heightTemp){
       notificationTemp = "{";
